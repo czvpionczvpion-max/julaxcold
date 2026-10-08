@@ -13,10 +13,10 @@
   let running = true;
 
   const blobs = [
-    { x: 0.78, y: 0.18, r: 0.42, a: 0.2, s: 0.35, p: 0 },
-    { x: 0.18, y: 0.72, r: 0.34, a: 0.13, s: 0.28, p: 1.7 },
-    { x: 0.62, y: 0.82, r: 0.26, a: 0.1, s: 0.42, p: 3.1 },
-    { x: 0.4, y: 0.22, r: 0.18, a: 0.08, s: 0.5, p: 4.4 },
+    { x: 0.78, y: 0.18, r: 0.42, a: 0.2, s: 0.35, p: 0, c: "142, 207, 255" },
+    { x: 0.18, y: 0.72, r: 0.34, a: 0.16, s: 0.28, p: 1.7, c: "255, 143, 208" },
+    { x: 0.62, y: 0.82, r: 0.26, a: 0.1, s: 0.42, p: 3.1, c: "142, 207, 255" },
+    { x: 0.4, y: 0.22, r: 0.18, a: 0.08, s: 0.5, p: 4.4, c: "255, 143, 208" },
   ];
 
   const flakes = Array.from({ length: 46 }, (_, i) => ({
@@ -39,11 +39,11 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function blob(x, y, r, alpha) {
+  function blob(x, y, r, alpha, color) {
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-    g.addColorStop(0, `rgba(255, 143, 208, ${alpha})`);
-    g.addColorStop(0.45, `rgba(226, 61, 140, ${alpha * 0.5})`);
-    g.addColorStop(1, "rgba(255, 143, 208, 0)");
+    g.addColorStop(0, `rgba(${color}, ${alpha})`);
+    g.addColorStop(0.5, `rgba(${color}, ${alpha * 0.45})`);
+    g.addColorStop(1, `rgba(${color}, 0)`);
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -72,8 +72,8 @@
     ctx.translate(x, y);
     ctx.rotate(t * 0.35);
     ctx.globalAlpha = alpha;
-    ctx.strokeStyle = "#fff0f8";
-    ctx.shadowColor = "rgba(255, 182, 220, 0.95)";
+    ctx.strokeStyle = "#e7f6ff";
+    ctx.shadowColor = "rgba(142, 207, 255, 0.95)";
     ctx.shadowBlur = 10;
     ctx.lineWidth = 1.1;
     ctx.beginPath();
@@ -95,7 +95,7 @@
       const nx = (b.x + Math.sin(t * b.s + b.p) * 0.08) * w;
       const ny = (b.y + Math.cos(t * b.s * 0.85 + b.p) * 0.07) * h;
       const nr = Math.min(w, h) * b.r * (0.9 + Math.sin(t * 0.4 + i) * 0.08);
-      blob(nx, ny, nr, b.a);
+      blob(nx, ny, nr, b.a, b.c);
     });
 
     flakes.forEach((s) => {
@@ -132,7 +132,7 @@
   resize();
   if (reduce) {
     blobs.forEach((b) => {
-      blob(b.x * w, b.y * h, Math.min(w, h) * b.r, b.a);
+      blob(b.x * w, b.y * h, Math.min(w, h) * b.r, b.a, b.c);
     });
   } else {
     raf = requestAnimationFrame(frame);
